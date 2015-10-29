@@ -10,6 +10,12 @@
 #import "BDPhoneHeadTabViewData.h"
 #import "BDPhoneHeadTabViewController.h"
 
+#pragma mark - BDPhoneHeadTabViewDelegate
+
+@protocol BDPhoneHeadTabViewDelegate <NSObject>
+
+@end
+
 #pragma mark - Tab View
 
 @interface BDPhoneHeadTabView : UIView

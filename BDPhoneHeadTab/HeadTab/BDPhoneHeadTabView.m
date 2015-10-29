@@ -210,6 +210,7 @@
     {
         [tabElement.switchButton setTitleColor:self.switchButtonNormalColor forState:(UIControlStateNormal)];
         [tabElement.switchButton setTitleColor:self.switchButtonHighlightColor forState:(UIControlStateHighlighted)];
+        [tabElement.switchButton setTitleColor:self.switchButtonSelectedColor forState:(UIControlStateSelected)];
     }
 }
 
@@ -219,6 +220,7 @@
     BDPhoneHeadTabElement *tabElement = [[BDPhoneHeadTabElement alloc] initWithTitle:title view:view];
     [tabElement.switchButton setTitleColor:self.switchButtonNormalColor forState:(UIControlStateNormal)];
     [tabElement.switchButton setTitleColor:self.switchButtonHighlightColor forState:(UIControlStateHighlighted)];
+    [tabElement.switchButton setTitleColor:self.switchButtonSelectedColor forState:(UIControlStateSelected)];
     
     tabElement.switchButtonCenterXConstraint =
      [NSLayoutConstraint constraintWithItem:tabElement.switchButton
@@ -233,7 +235,7 @@
     // update switch button status
     if (([self.tabElements count]-1) == currentTabIndex)
     {
-        [tabElement.switchButton setTitleColor:self.switchButtonHighlightColor forState:(UIControlStateNormal)];
+        tabElement.switchButton.selected = YES;
     }
     
     // add to view hierachy
@@ -354,6 +356,13 @@
 }
 
 - (void)selectTabAtIndex:(NSInteger)tabIndex
+{
+    
+}
+
+#pragma Event Action
+
+- (void)switchButtonSelected:(id)sender
 {
     
 }
