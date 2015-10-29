@@ -21,15 +21,47 @@ typedef enum
     BDPhoneHeadTabViewStyleAddWebAddress
 } BDPhoneHeadTabViewStyle;
 
+@class BDPhoneHeadTabViewController;
+
+#pragma mark - Head Tab View Controller Delegate
+
+@protocol BDPhoneHeadTabViewControllerDelegate <NSObject>
+
+@optional
+
+- (void)onTabChanged:(BDPhoneHeadTabViewController *)sender;
+
+@end
+
+#pragma mark - Head Tab View Controller
+
 @interface BDPhoneHeadTabViewController : UIViewController
 
 @property (assign, nonatomic) BDPhoneHeadTabViewStyle style;
 
+/**
+ *  current tab index
+ */
+@property (assign, nonatomic) NSInteger currentTabIndex;
+
+/**
+ *  delegate
+ */
+@property (weak, nonatomic) id<BDPhoneHeadTabViewControllerDelegate> delegate;
+
 - (void)updateStyle:(BDPhoneHeadTabViewStyle)style;
 
-// add tab
+/**
+ *  add tab
+ */
 - (void)addTabWithTitle:(NSString *)title;
 - (void)addTabWithView:(UIView *)view;
 - (void)addTabWithTitle:(NSString *)title view:(UIView *)view;
+
+/**
+ *  select tab
+ */
+- (void)selectTabAtIndex:(NSInteger)tabIndex;
+- (void)selectTabOfView:(UIView *)tabView;  // TO COMPLETE
 
 @end

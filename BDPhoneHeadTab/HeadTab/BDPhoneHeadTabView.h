@@ -40,7 +40,15 @@
  */
 - (void)updateStyle:(BDPhoneHeadTabViewStyle)style;
 
-- (void)addTabWithTitle:(NSString *)title view:(UIView *)view;
+/**
+ *  @brief add tab
+ */
+- (void)addTabWithTitle:(NSString *)title view:(UIView *)view currentTabIndex:(NSInteger)currentTabIndex;
+
+/**
+ *  @brief select tab
+ */
+- (void)selectTabAtIndex:(NSInteger)tabIndex;
 
 @end
 

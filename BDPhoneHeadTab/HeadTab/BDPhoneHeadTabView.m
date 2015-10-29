@@ -57,6 +57,7 @@
         _contentScrollView = [[UIScrollView alloc] init];
         _contentScrollView.translatesAutoresizingMaskIntoConstraints = NO;
         _contentScrollView.pagingEnabled = YES;
+        _contentScrollView.bounces = NO;
         _contentScrollView.showsHorizontalScrollIndicator = NO;
         [self addSubview:_contentScrollView];
         
@@ -212,7 +213,7 @@
     }
 }
 
-- (void)addTabWithTitle:(NSString *)title view:(UIView *)view
+- (void)addTabWithTitle:(NSString *)title view:(UIView *)view currentTabIndex:(NSInteger)currentTabIndex
 {
     // initialization
     BDPhoneHeadTabElement *tabElement = [[BDPhoneHeadTabElement alloc] initWithTitle:title view:view];
@@ -229,6 +230,12 @@
                                    constant:0];
     [self.tabElements addObject:tabElement];
     
+    // update switch button status
+    if (([self.tabElements count]-1) == currentTabIndex)
+    {
+        [tabElement.switchButton setTitleColor:self.switchButtonHighlightColor forState:(UIControlStateNormal)];
+    }
+    
     // add to view hierachy
     [self.headBackgroundView addSubview:tabElement.switchButton];
     [self.contentView addSubview:tabElement.contentView];
@@ -237,6 +244,7 @@
     [self layoutAfterAddTabElement:tabElement];
 }
 
+// private
 - (void)layoutAfterAddTabElement:(BDPhoneHeadTabElement *)tabElement
 {
     // setup the added tab element
@@ -345,6 +353,11 @@
     [self setNeedsUpdateConstraints];
 }
 
+- (void)selectTabAtIndex:(NSInteger)tabIndex
+{
+    
+}
+
 @end
 
 #pragma mark - Tab Element
@@ -360,6 +373,11 @@
         _switchButton.translatesAutoresizingMaskIntoConstraints = NO;
         [_switchButton setTitle:title forState:(UIControlStateNormal)];
         
+        if (view == nil)
+        {
+            view = [[UIView alloc] init];
+            view.backgroundColor = [UIColor clearColor];
+        }
         _contentView = view;
         _contentView.translatesAutoresizingMaskIntoConstraints = NO;
     }

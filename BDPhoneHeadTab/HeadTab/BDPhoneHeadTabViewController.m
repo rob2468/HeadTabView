@@ -24,6 +24,9 @@
     self = [super init];
     if (self)
     {
+        // the default tab is the first
+        _currentTabIndex = 0;
+        
         _headTabViewData = [[BDPhoneHeadTabViewData alloc] init];
         _headTabView = [[BDPhoneHeadTabView alloc] initWithViewData:_headTabViewData];
         _headTabView.contentScrollView.delegate = self;
@@ -83,7 +86,7 @@
     }
 }
 
-#pragma mark - add tab
+#pragma mark - Add Tab
 
 - (void)addTabWithTitle:(NSString *)title
 {
@@ -97,7 +100,20 @@
 
 - (void)addTabWithTitle:(NSString *)title view:(UIView *)view
 {
-    [self.headTabView addTabWithTitle:title view:view];
+    [self.headTabView addTabWithTitle:title view:view currentTabIndex:self.currentTabIndex];
+}
+
+
+#pragma mark - Select Tab
+
+- (void)selectTabAtIndex:(NSInteger)tabIndex
+{
+    [self.headTabView selectTabAtIndex:tabIndex];
+}
+
+- (void)selectTabOfView:(UIView *)tabView
+{
+    
 }
 
 #pragma mark - UIScrollViewDelegate
