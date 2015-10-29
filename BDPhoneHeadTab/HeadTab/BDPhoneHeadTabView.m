@@ -19,9 +19,7 @@
 @property (strong, nonatomic) UIColor *switchButtonHighlightColor;
 @property (strong, nonatomic) UIColor *switchButtonSelectedColor;
 
-// constraints
 @property (strong, nonatomic) NSLayoutConstraint *headBackgroundViewHeightConstraint;
-
 @property (strong, nonatomic) NSLayoutConstraint *lineIndicatorViewWidthConstraint;
 @property (strong, nonatomic) NSLayoutConstraint *lineIndicatorViewHeightConstraint;
 @property (strong, nonatomic) NSLayoutConstraint *lineIndicatorViewCenterXConstraint;
@@ -221,6 +219,7 @@
     [tabElement.switchButton setTitleColor:self.switchButtonNormalColor forState:(UIControlStateNormal)];
     [tabElement.switchButton setTitleColor:self.switchButtonHighlightColor forState:(UIControlStateHighlighted)];
     [tabElement.switchButton setTitleColor:self.switchButtonSelectedColor forState:(UIControlStateSelected)];
+    [tabElement.switchButton addTarget:self action:@selector(switchButtonSelected:) forControlEvents:(UIControlEventTouchUpInside)];
     
     tabElement.switchButtonCenterXConstraint =
      [NSLayoutConstraint constraintWithItem:tabElement.switchButton
@@ -360,11 +359,37 @@
     
 }
 
-#pragma Event Action
+#pragma mark - Event Action
 
-- (void)switchButtonSelected:(id)sender
+- (void)switchButtonSelected:(UIButton *)sender
 {
+    if (sender.selected == YES)
+    {
+        return;
+    }
     
+    BDPhoneHeadTabElement *oldTabElement;
+    BDPhoneHeadTabElement *newTabElement;
+    
+    // switch button status
+    for (NSInteger i=0; i<[self.tabElements count]; i++)
+    {
+        BDPhoneHeadTabElement *tabElement = [self.tabElements objectAtIndex:i];
+        if (tabElement.switchButton.selected == YES)
+        {
+            oldTabElement = tabElement;
+        }
+        if (tabElement.switchButton == sender)
+        {
+            newTabElement = tabElement;
+        }
+    }
+    oldTabElement.switchButton.selected = NO;
+    newTabElement.switchButton.selected = YES;
+    
+    // content view status
+    CGPoint contentOffset = newTabElement.contentView.frame.origin;
+    [self.contentScrollView setContentOffset:contentOffset animated:YES];
 }
 
 @end
