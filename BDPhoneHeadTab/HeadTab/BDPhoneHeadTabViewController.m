@@ -10,7 +10,7 @@
 #import "BDPhoneHeadTabView.h"
 #import "BDPhoneHeadTabViewData.h"
 
-@interface BDPhoneHeadTabViewController () <UIScrollViewDelegate>
+@interface BDPhoneHeadTabViewController ()
 
 @property (strong, nonatomic) BDPhoneHeadTabViewData *headTabViewData;
 @property (strong, nonatomic) BDPhoneHeadTabView *headTabView;
@@ -29,7 +29,6 @@
         
         _headTabViewData = [[BDPhoneHeadTabViewData alloc] init];
         _headTabView = [[BDPhoneHeadTabView alloc] initWithViewData:_headTabViewData];
-        _headTabView.contentScrollView.delegate = self;
     }
     return self;
 }
@@ -77,6 +76,8 @@
                                    constant:0]];
 }
 
+#pragma mark -
+
 - (void)updateStyle:(BDPhoneHeadTabViewStyle)style
 {
     if (self.style != style)
@@ -112,38 +113,6 @@
 }
 
 - (void)selectTabOfView:(UIView *)tabView
-{
-    
-}
-
-#pragma mark - UIScrollViewDelegate
-
-- (void)scrollViewDidScroll:(UIScrollView *)scrollView
-{
-    
-}
-
-- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
-{
-    
-}
-
-- (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset
-{
-    
-}
-
-- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
-{
-    
-}
-
-- (void)scrollViewWillBeginDecelerating:(UIScrollView *)scrollView
-{
-    
-}
-
-- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
 {
     
 }

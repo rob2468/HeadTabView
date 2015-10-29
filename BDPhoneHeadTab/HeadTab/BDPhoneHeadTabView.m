@@ -11,7 +11,7 @@
 
 #pragma mark - Tab View
 
-@interface BDPhoneHeadTabView ()
+@interface BDPhoneHeadTabView () <UIScrollViewDelegate>
 
 @property (strong, nonatomic) BDPhoneHeadTabViewData *viewData; // view data
 
@@ -57,6 +57,7 @@
         _contentScrollView.pagingEnabled = YES;
         _contentScrollView.bounces = NO;
         _contentScrollView.showsHorizontalScrollIndicator = NO;
+        _contentScrollView.delegate = self;
         [self addSubview:_contentScrollView];
         
         _contentView = [[UIView alloc] init];
@@ -177,6 +178,8 @@
     }
     return self;
 }
+
+#pragma mark -
 
 - (void)updateStyle:(BDPhoneHeadTabViewStyle)style
 {
@@ -357,6 +360,67 @@
 - (void)selectTabAtIndex:(NSInteger)tabIndex
 {
     
+}
+
+#pragma mark - UIScrollViewDelegate
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView
+{
+    
+}
+
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
+{
+    
+}
+
+- (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset
+{
+    
+}
+
+- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
+{
+    if (!decelerate)
+    {
+        [self tabSwitchByDragging];
+    }
+}
+
+- (void)scrollViewWillBeginDecelerating:(UIScrollView *)scrollView
+{
+    
+}
+
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
+{
+    [self tabSwitchByDragging];
+}
+
+#pragma mark -
+
+- (void)tabSwitchByDragging
+{
+    BDPhoneHeadTabElement *oldTabElement;
+    BDPhoneHeadTabElement *newTabElement;
+    
+    // switch button status
+    for (NSInteger i=0; i<[self.tabElements count]; i++)
+    {
+        BDPhoneHeadTabElement *tabElement = [self.tabElements objectAtIndex:i];
+        if (tabElement.switchButton.selected == YES)
+        {
+            oldTabElement = tabElement;
+        }
+        CGPoint contentOffset = self.contentScrollView.contentOffset;
+        CGPoint contentViewOrigin = tabElement.contentView.frame.origin;
+        if (contentOffset.x == contentViewOrigin.x && contentOffset.y == contentViewOrigin.y)
+        {
+            newTabElement = tabElement;
+        }
+    }
+    oldTabElement.switchButton.selected = NO;
+    newTabElement.switchButton.selected = YES;
 }
 
 #pragma mark - Event Action
