@@ -15,6 +15,10 @@
 
 @property (strong, nonatomic) BDPhoneHeadTabViewData *viewData; // view data
 
+@property (strong, nonatomic) UIColor *switchButtonNormalColor;
+@property (strong, nonatomic) UIColor *switchButtonHighlightColor;
+@property (strong, nonatomic) UIColor *switchButtonSelectedColor;
+
 // constraints
 @property (strong, nonatomic) NSLayoutConstraint *headBackgroundViewHeightConstraint;
 
@@ -34,7 +38,11 @@
     if (self)
     {
         // view data
-        self.viewData = viewData;
+        _viewData = viewData;
+        
+        _switchButtonNormalColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.5f];
+        _switchButtonHighlightColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:1.0f];
+        _switchButtonSelectedColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:1.0f];
         
         // create instances and add subviews
         _headBackgroundView = [[UIView alloc] init];
@@ -173,17 +181,34 @@
 
 - (void)updateStyle:(BDPhoneHeadTabViewStyle)style
 {
+    UIColor *headBackgroundColor;
+    
+    // set variables
     switch (style)
     {
         case BDPhoneHeadTabViewStyleBlue:
-            
-            break;
-            
-        default:
         {
-            self.headBackgroundView.backgroundColor = [UIColor colorWithRed:248/255.f green:248/255.f blue:248/255.f alpha:1];
             break;
         }
+        default:
+        {
+            headBackgroundColor = [UIColor colorWithRed:248/255.f green:248/255.f blue:248/255.f alpha:1];
+            
+            self.switchButtonNormalColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.5f];
+            self.switchButtonHighlightColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:1.0f];
+            self.switchButtonSelectedColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:1.0f];
+            
+            break;
+        }
+    }
+    
+    // set views
+    self.headBackgroundView.backgroundColor = headBackgroundColor;
+    
+    for (BDPhoneHeadTabElement *tabElement in self.tabElements)
+    {
+        [tabElement.switchButton setTitleColor:self.switchButtonNormalColor forState:(UIControlStateNormal)];
+        [tabElement.switchButton setTitleColor:self.switchButtonHighlightColor forState:(UIControlStateHighlighted)];
     }
 }
 
@@ -191,6 +216,9 @@
 {
     // initialization
     BDPhoneHeadTabElement *tabElement = [[BDPhoneHeadTabElement alloc] initWithTitle:title view:view];
+    [tabElement.switchButton setTitleColor:self.switchButtonNormalColor forState:(UIControlStateNormal)];
+    [tabElement.switchButton setTitleColor:self.switchButtonHighlightColor forState:(UIControlStateHighlighted)];
+    
     tabElement.switchButtonCenterXConstraint =
      [NSLayoutConstraint constraintWithItem:tabElement.switchButton
                                   attribute:(NSLayoutAttributeCenterX)

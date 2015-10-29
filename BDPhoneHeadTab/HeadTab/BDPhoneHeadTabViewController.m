@@ -10,7 +10,7 @@
 #import "BDPhoneHeadTabView.h"
 #import "BDPhoneHeadTabViewData.h"
 
-@interface BDPhoneHeadTabViewController ()
+@interface BDPhoneHeadTabViewController () <UIScrollViewDelegate>
 
 @property (strong, nonatomic) BDPhoneHeadTabViewData *headTabViewData;
 @property (strong, nonatomic) BDPhoneHeadTabView *headTabView;
@@ -26,7 +26,7 @@
     {
         _headTabViewData = [[BDPhoneHeadTabViewData alloc] init];
         _headTabView = [[BDPhoneHeadTabView alloc] initWithViewData:_headTabViewData];
-
+        _headTabView.contentScrollView.delegate = self;
     }
     return self;
 }
@@ -98,6 +98,38 @@
 - (void)addTabWithTitle:(NSString *)title view:(UIView *)view
 {
     [self.headTabView addTabWithTitle:title view:view];
+}
+
+#pragma mark - UIScrollViewDelegate
+
+- (void)scrollViewDidScroll:(UIScrollView *)scrollView
+{
+    
+}
+
+- (void)scrollViewWillBeginDragging:(UIScrollView *)scrollView
+{
+    
+}
+
+- (void)scrollViewWillEndDragging:(UIScrollView *)scrollView withVelocity:(CGPoint)velocity targetContentOffset:(inout CGPoint *)targetContentOffset
+{
+    
+}
+
+- (void)scrollViewDidEndDragging:(UIScrollView *)scrollView willDecelerate:(BOOL)decelerate
+{
+    
+}
+
+- (void)scrollViewWillBeginDecelerating:(UIScrollView *)scrollView
+{
+    
+}
+
+- (void)scrollViewDidEndDecelerating:(UIScrollView *)scrollView
+{
+    
 }
 
 - (void)didReceiveMemoryWarning {

@@ -74,6 +74,9 @@
     
     self.greenViewController = [[BDGreenViewController alloc] init];
     [self.headTabViewController addTabWithTitle:@"Green" view:self.greenViewController.view];
+    
+    self.blueViewController = [[BDBlueViewController alloc] init];
+    [self.headTabViewController addTabWithTitle:@"Blue" view:self.blueViewController.view];
 }
 
 - (void)didReceiveMemoryWarning {
