@@ -67,11 +67,7 @@
         _tabElements = [[NSMutableArray alloc] init];
         
         // add constraints
-        id viewsDict = @{
-                         @"_headBackgroundView": _headBackgroundView,
-                         @"_contentScrollView": _contentScrollView,
-                         @"_contentView": _contentView
-                         };
+        NSDictionary *viewsDict = NSDictionaryOfVariableBindings(_headBackgroundView, _contentScrollView, _contentView);
         
         // headBackgroundView
         [self addConstraints:
@@ -177,6 +173,26 @@
                                        constant:0]];
     }
     return self;
+}
+
+- (void)layoutSubviews
+{
+    NSInteger currentTabIndex = 0;
+    BDPhoneHeadTabElement *currentTabElement;
+    
+    for (NSInteger i=0; i<[self.tabElements count]; i++)
+    {
+        BDPhoneHeadTabElement *tabElement = [self.tabElements objectAtIndex:i];
+        if (tabElement.switchButton.selected == YES)
+        {
+            currentTabIndex = i;
+            currentTabElement = tabElement;
+            break;
+        }
+    }
+    
+    CGPoint contentOffset = currentTabElement.contentView.frame.origin;
+    [self.contentScrollView setContentOffset:contentOffset animated:NO];
 }
 
 #pragma mark -
