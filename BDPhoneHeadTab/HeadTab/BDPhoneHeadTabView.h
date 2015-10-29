@@ -12,7 +12,11 @@
 
 #pragma mark - BDPhoneHeadTabViewDelegate
 
+@class BDPhoneHeadTabView;
+
 @protocol BDPhoneHeadTabViewDelegate <NSObject>
+
+- (void)onTabChanged:(BDPhoneHeadTabView *)sender fromTabIndex:(NSInteger)fromTabIndex toTabIndex:(NSInteger)toTabIndex;
 
 @end
 
@@ -35,6 +39,8 @@
  */
 @property (strong, nonatomic) UIScrollView *contentScrollView;
 @property (strong, nonatomic) UIView *contentView;      // added to scroll view
+
+@property (weak, nonatomic) id<BDPhoneHeadTabViewDelegate> delegate;
 
 /**
  *  @brief initialize with BDPhoneHeadTabViewData

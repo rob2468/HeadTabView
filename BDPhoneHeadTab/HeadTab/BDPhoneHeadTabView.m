@@ -397,10 +397,13 @@
     [self tabSwitchByDragging];
 }
 
-#pragma mark -
+#pragma mark - Switch Tab
 
 - (void)tabSwitchByDragging
 {
+    NSInteger fromTabIndex = 0;
+    NSInteger toTabIndex = 0;
+    
     BDPhoneHeadTabElement *oldTabElement;
     BDPhoneHeadTabElement *newTabElement;
     
@@ -410,27 +413,42 @@
         BDPhoneHeadTabElement *tabElement = [self.tabElements objectAtIndex:i];
         if (tabElement.switchButton.selected == YES)
         {
+            fromTabIndex = i;
             oldTabElement = tabElement;
         }
         CGPoint contentOffset = self.contentScrollView.contentOffset;
         CGPoint contentViewOrigin = tabElement.contentView.frame.origin;
         if (contentOffset.x == contentViewOrigin.x && contentOffset.y == contentViewOrigin.y)
         {
+            toTabIndex = i;
             newTabElement = tabElement;
         }
     }
+    // switch to the same tab
+    if (fromTabIndex == toTabIndex)
+    {
+        return;
+    }
     oldTabElement.switchButton.selected = NO;
     newTabElement.switchButton.selected = YES;
+    
+    // send tab changed event
+    if ([self.delegate respondsToSelector:@selector(onTabChanged:fromTabIndex:toTabIndex:)])
+    {
+        [self.delegate onTabChanged:self fromTabIndex:fromTabIndex toTabIndex:toTabIndex];
+    }
 }
-
-#pragma mark - Event Action
 
 - (void)switchButtonSelected:(UIButton *)sender
 {
+    // switch to the same tab
     if (sender.selected == YES)
     {
         return;
     }
+    
+    NSInteger fromTabIndex = 0;
+    NSInteger toTabIndex = 0;
     
     BDPhoneHeadTabElement *oldTabElement;
     BDPhoneHeadTabElement *newTabElement;
@@ -441,10 +459,12 @@
         BDPhoneHeadTabElement *tabElement = [self.tabElements objectAtIndex:i];
         if (tabElement.switchButton.selected == YES)
         {
+            fromTabIndex = i;
             oldTabElement = tabElement;
         }
         if (tabElement.switchButton == sender)
         {
+            toTabIndex = i;
             newTabElement = tabElement;
         }
     }
@@ -454,6 +474,12 @@
     // content view status
     CGPoint contentOffset = newTabElement.contentView.frame.origin;
     [self.contentScrollView setContentOffset:contentOffset animated:YES];
+    
+    // send tab changed event
+    if ([self.delegate respondsToSelector:@selector(onTabChanged:fromTabIndex:toTabIndex:)])
+    {
+        [self.delegate onTabChanged:self fromTabIndex:fromTabIndex toTabIndex:toTabIndex];
+    }
 }
 
 @end

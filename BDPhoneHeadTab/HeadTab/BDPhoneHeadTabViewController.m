@@ -10,7 +10,7 @@
 #import "BDPhoneHeadTabView.h"
 #import "BDPhoneHeadTabViewData.h"
 
-@interface BDPhoneHeadTabViewController ()
+@interface BDPhoneHeadTabViewController () <BDPhoneHeadTabViewDelegate>
 
 @property (strong, nonatomic) BDPhoneHeadTabViewData *headTabViewData;
 @property (strong, nonatomic) BDPhoneHeadTabView *headTabView;
@@ -29,6 +29,7 @@
         
         _headTabViewData = [[BDPhoneHeadTabViewData alloc] init];
         _headTabView = [[BDPhoneHeadTabView alloc] initWithViewData:_headTabViewData];
+        _headTabView.delegate = self;
     }
     return self;
 }
@@ -76,6 +77,17 @@
                                    constant:0]];
 }
 
+#pragma mark - BDPhoneHeadTabViewDelegate
+
+- (void)onTabChanged:(BDPhoneHeadTabView *)sender fromTabIndex:(NSInteger)fromTabIndex toTabIndex:(NSInteger)toTabIndex
+{
+    self.currentTabIndex = toTabIndex;
+    if ([self.delegate respondsToSelector:@selector(onTabChanged:)])
+    {
+        [self.delegate onTabChanged:self];
+    }
+}
+
 #pragma mark -
 
 - (void)updateStyle:(BDPhoneHeadTabViewStyle)style
@@ -103,7 +115,6 @@
 {
     [self.headTabView addTabWithTitle:title view:view currentTabIndex:self.currentTabIndex];
 }
-
 
 #pragma mark - Select Tab
 

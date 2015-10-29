@@ -12,7 +12,7 @@
 #import "BDGreenViewController.h"
 #import "BDBlueViewController.h"
 
-@interface ViewController ()
+@interface ViewController () <BDPhoneHeadTabViewControllerDelegate>
 
 @property (strong, nonatomic) BDPhoneHeadTabViewController *headTabViewController;
 
@@ -29,6 +29,7 @@
     [super viewDidLoad];
     
     self.headTabViewController = [[BDPhoneHeadTabViewController alloc] init];
+    self.headTabViewController.delegate = self;
     [self.headTabViewController updateStyle:(BDPhoneHeadTabViewStyleLightGray)];
     [self.view addSubview:self.headTabViewController.view];
     
@@ -77,6 +78,13 @@
     
     self.blueViewController = [[BDBlueViewController alloc] init];
     [self.headTabViewController addTabWithTitle:@"Blue" view:self.blueViewController.view];
+}
+
+#pragma mark - BDPhoneHeadTabViewControllerDelegate
+
+- (void)onTabChanged:(BDPhoneHeadTabViewController *)sender
+{
+    NSLog(@"onTabChanged to index: %d", sender.currentTabIndex);
 }
 
 - (void)didReceiveMemoryWarning {
