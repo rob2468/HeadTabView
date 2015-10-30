@@ -66,6 +66,11 @@
         
         _tabElements = [[NSMutableArray alloc] init];
         
+        // the defaut tab is the first
+        _currentTabIndex = 0;
+        
+        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(notificationReceived:) name:UIDeviceOrientationDidChangeNotification object:nil];
+        
         // add constraints
         NSDictionary *viewsDict = NSDictionaryOfVariableBindings(_headBackgroundView, _contentScrollView, _contentView);
         
@@ -175,24 +180,9 @@
     return self;
 }
 
-- (void)layoutSubviews
+- (void)dealloc
 {
-    NSInteger currentTabIndex = 0;
-    BDPhoneHeadTabElement *currentTabElement;
-    
-    for (NSInteger i=0; i<[self.tabElements count]; i++)
-    {
-        BDPhoneHeadTabElement *tabElement = [self.tabElements objectAtIndex:i];
-        if (tabElement.switchButton.selected == YES)
-        {
-            currentTabIndex = i;
-            currentTabElement = tabElement;
-            break;
-        }
-    }
-    
-    CGPoint contentOffset = currentTabElement.contentView.frame.origin;
-    [self.contentScrollView setContentOffset:contentOffset animated:NO];
+    [[NSNotificationCenter defaultCenter] removeObserver:self];
 }
 
 #pragma mark -
@@ -231,7 +221,7 @@
     }
 }
 
-- (void)addTabWithTitle:(NSString *)title view:(UIView *)view currentTabIndex:(NSInteger)currentTabIndex
+- (void)addTabWithTitle:(NSString *)title view:(UIView *)view
 {
     // initialization
     BDPhoneHeadTabElement *tabElement = [[BDPhoneHeadTabElement alloc] initWithTitle:title view:view];
@@ -251,7 +241,7 @@
     [self.tabElements addObject:tabElement];
     
     // update switch button status
-    if (([self.tabElements count]-1) == currentTabIndex)
+    if (([self.tabElements count]-1) == self.currentTabIndex)
     {
         tabElement.switchButton.selected = YES;
     }
@@ -378,6 +368,21 @@
     
 }
 
+- (void)notificationReceived:(NSNotification *)notification
+{
+    if ([notification.name isEqualToString:UIDeviceOrientationDidChangeNotification])
+    {
+        if (!self.contentScrollView.isDecelerating)
+        {
+            BDPhoneHeadTabElement *currentTabElement = [self.tabElements objectAtIndex:self.currentTabIndex];
+            
+            CGPoint contentOffset = currentTabElement.contentView.frame.origin;
+            [self.contentScrollView setContentOffset:contentOffset animated:NO];
+        }
+    }
+}
+
+
 #pragma mark - UIScrollViewDelegate
 
 - (void)scrollViewDidScroll:(UIScrollView *)scrollView
@@ -417,31 +422,28 @@
 
 - (void)tabSwitchByDragging
 {
-    NSInteger fromTabIndex = 0;
-    NSInteger toTabIndex = 0;
+    NSLog(@"tabSwitchByDragging");
     
-    BDPhoneHeadTabElement *oldTabElement;
+    NSInteger oldTabIndex = self.currentTabIndex;
+    
+    BDPhoneHeadTabElement *oldTabElement = [self.tabElements objectAtIndex:oldTabIndex];
     BDPhoneHeadTabElement *newTabElement;
     
     // switch button status
     for (NSInteger i=0; i<[self.tabElements count]; i++)
     {
         BDPhoneHeadTabElement *tabElement = [self.tabElements objectAtIndex:i];
-        if (tabElement.switchButton.selected == YES)
-        {
-            fromTabIndex = i;
-            oldTabElement = tabElement;
-        }
+
         CGPoint contentOffset = self.contentScrollView.contentOffset;
         CGPoint contentViewOrigin = tabElement.contentView.frame.origin;
         if (contentOffset.x == contentViewOrigin.x && contentOffset.y == contentViewOrigin.y)
         {
-            toTabIndex = i;
+            self.currentTabIndex = i;
             newTabElement = tabElement;
         }
     }
     // switch to the same tab
-    if (fromTabIndex == toTabIndex)
+    if (self.currentTabIndex == oldTabIndex)
     {
         return;
     }
@@ -449,9 +451,9 @@
     newTabElement.switchButton.selected = YES;
     
     // send tab changed event
-    if ([self.delegate respondsToSelector:@selector(onTabChanged:fromTabIndex:toTabIndex:)])
+    if ([self.delegate respondsToSelector:@selector(onTabChanged:fromTabIndex:)])
     {
-        [self.delegate onTabChanged:self fromTabIndex:fromTabIndex toTabIndex:toTabIndex];
+        [self.delegate onTabChanged:self fromTabIndex:oldTabIndex];
     }
 }
 
@@ -463,25 +465,20 @@
         return;
     }
     
-    NSInteger fromTabIndex = 0;
-    NSInteger toTabIndex = 0;
+    NSInteger oldTabIndex = self.currentTabIndex;
     
-    BDPhoneHeadTabElement *oldTabElement;
+    BDPhoneHeadTabElement *oldTabElement = [self.tabElements objectAtIndex:oldTabIndex];
     BDPhoneHeadTabElement *newTabElement;
     
     // switch button status
     for (NSInteger i=0; i<[self.tabElements count]; i++)
     {
         BDPhoneHeadTabElement *tabElement = [self.tabElements objectAtIndex:i];
-        if (tabElement.switchButton.selected == YES)
-        {
-            fromTabIndex = i;
-            oldTabElement = tabElement;
-        }
         if (tabElement.switchButton == sender)
         {
-            toTabIndex = i;
+            self.currentTabIndex = i;
             newTabElement = tabElement;
+            break;
         }
     }
     oldTabElement.switchButton.selected = NO;
@@ -492,9 +489,9 @@
     [self.contentScrollView setContentOffset:contentOffset animated:YES];
     
     // send tab changed event
-    if ([self.delegate respondsToSelector:@selector(onTabChanged:fromTabIndex:toTabIndex:)])
+    if ([self.delegate respondsToSelector:@selector(onTabChanged:fromTabIndex:)])
     {
-        [self.delegate onTabChanged:self fromTabIndex:fromTabIndex toTabIndex:toTabIndex];
+        [self.delegate onTabChanged:self fromTabIndex:oldTabIndex];
     }
 }
 

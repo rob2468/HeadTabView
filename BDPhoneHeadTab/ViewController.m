@@ -84,7 +84,7 @@
 
 - (void)onTabChanged:(BDPhoneHeadTabViewController *)sender
 {
-    NSLog(@"onTabChanged to index: %d", sender.currentTabIndex);
+    NSLog(@"onTabChanged to index: %ld", (long)sender.currentTabIndex);
 }
 
 - (void)didReceiveMemoryWarning {

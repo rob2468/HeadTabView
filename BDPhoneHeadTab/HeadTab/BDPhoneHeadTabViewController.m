@@ -24,7 +24,6 @@
     self = [super init];
     if (self)
     {
-        // the default tab is the first
         _currentTabIndex = 0;
         
         _headTabViewData = [[BDPhoneHeadTabViewData alloc] init];
@@ -79,9 +78,8 @@
 
 #pragma mark - BDPhoneHeadTabViewDelegate
 
-- (void)onTabChanged:(BDPhoneHeadTabView *)sender fromTabIndex:(NSInteger)fromTabIndex toTabIndex:(NSInteger)toTabIndex
+- (void)onTabChanged:(BDPhoneHeadTabView *)sender fromTabIndex:(NSInteger)fromTabIndex
 {
-    self.currentTabIndex = toTabIndex;
     if ([self.delegate respondsToSelector:@selector(onTabChanged:)])
     {
         [self.delegate onTabChanged:self];
@@ -99,6 +97,13 @@
     }
 }
 
+#pragma Setter and Getter
+
+- (NSInteger)currentTabIndex
+{
+    return self.headTabView.currentTabIndex;
+}
+
 #pragma mark - Add Tab
 
 - (void)addTabWithTitle:(NSString *)title
@@ -113,7 +118,7 @@
 
 - (void)addTabWithTitle:(NSString *)title view:(UIView *)view
 {
-    [self.headTabView addTabWithTitle:title view:view currentTabIndex:self.currentTabIndex];
+    [self.headTabView addTabWithTitle:title view:view];
 }
 
 #pragma mark - Select Tab

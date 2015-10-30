@@ -16,7 +16,7 @@
 
 @protocol BDPhoneHeadTabViewDelegate <NSObject>
 
-- (void)onTabChanged:(BDPhoneHeadTabView *)sender fromTabIndex:(NSInteger)fromTabIndex toTabIndex:(NSInteger)toTabIndex;
+- (void)onTabChanged:(BDPhoneHeadTabView *)sender fromTabIndex:(NSInteger)fromTabIndex;
 
 @end
 
@@ -43,6 +43,11 @@
 @property (weak, nonatomic) id<BDPhoneHeadTabViewDelegate> delegate;
 
 /**
+ *  current tab index
+ */
+@property (assign, nonatomic) NSInteger currentTabIndex;
+
+/**
  *  @brief initialize with BDPhoneHeadTabViewData
  */
 - (instancetype)initWithViewData:(BDPhoneHeadTabViewData *)viewData;
@@ -55,7 +60,7 @@
 /**
  *  @brief add tab
  */
-- (void)addTabWithTitle:(NSString *)title view:(UIView *)view currentTabIndex:(NSInteger)currentTabIndex;
+- (void)addTabWithTitle:(NSString *)title view:(UIView *)view;
 
 /**
  *  @brief select tab
