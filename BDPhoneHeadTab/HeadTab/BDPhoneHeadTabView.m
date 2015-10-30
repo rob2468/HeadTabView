@@ -422,21 +422,19 @@
 
 - (void)tabSwitchByDragging
 {
-    NSLog(@"tabSwitchByDragging");
-    
     NSInteger oldTabIndex = self.currentTabIndex;
     
     BDPhoneHeadTabElement *oldTabElement = [self.tabElements objectAtIndex:oldTabIndex];
     BDPhoneHeadTabElement *newTabElement;
     
-    // switch button status
     for (NSInteger i=0; i<[self.tabElements count]; i++)
     {
         BDPhoneHeadTabElement *tabElement = [self.tabElements objectAtIndex:i];
 
-        CGPoint contentOffset = self.contentScrollView.contentOffset;
-        CGPoint contentViewOrigin = tabElement.contentView.frame.origin;
-        if (contentOffset.x == contentViewOrigin.x && contentOffset.y == contentViewOrigin.y)
+        CGFloat contentOffsetX = self.contentScrollView.contentOffset.x;
+        CGFloat contentViewX = tabElement.contentView.frame.origin.x;
+        CGFloat contentViewWidth = tabElement.contentView.frame.size.width;
+        if (fabs(contentOffsetX - contentViewX) < contentViewWidth/2.0)
         {
             self.currentTabIndex = i;
             newTabElement = tabElement;
@@ -447,8 +445,13 @@
     {
         return;
     }
+    // switch button status
     oldTabElement.switchButton.selected = NO;
     newTabElement.switchButton.selected = YES;
+    
+    // content view status
+    CGPoint contentOffset = newTabElement.contentView.frame.origin;
+    [self.contentScrollView setContentOffset:contentOffset animated:YES];
     
     // send tab changed event
     if ([self.delegate respondsToSelector:@selector(onTabChanged:fromTabIndex:)])
@@ -470,7 +473,6 @@
     BDPhoneHeadTabElement *oldTabElement = [self.tabElements objectAtIndex:oldTabIndex];
     BDPhoneHeadTabElement *newTabElement;
     
-    // switch button status
     for (NSInteger i=0; i<[self.tabElements count]; i++)
     {
         BDPhoneHeadTabElement *tabElement = [self.tabElements objectAtIndex:i];
@@ -481,6 +483,7 @@
             break;
         }
     }
+    // switch button status
     oldTabElement.switchButton.selected = NO;
     newTabElement.switchButton.selected = YES;
     
