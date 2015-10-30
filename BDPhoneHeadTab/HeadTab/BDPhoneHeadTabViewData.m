@@ -15,10 +15,15 @@
     self = [super init];
     if (self)
     {
-        _headBackgroundViewHeight = 64.0f;
-        _headTabButtonHeight = 44.0f;
-        _lineIndicatorViewWidth = 0.0f;
-        _lineIndicatorViewHeight = 2.0f;
+        _headBackgroundViewPortraitHeight = 64.0f;
+        _headSwitchButtonPortraitHeight = 44.0f;
+        _lineIndicatorViewPortraitWidth = 0.0f;
+        _lineIndicatorViewPortraitHeight = 2.0f;
+        
+        _headBackgroundViewLandscapeHeight = 44.0f;
+        _headSwitchButtonLandscapeHeight = 44.0f;
+        _lineIndicatorViewLandscapeWidth = 0.0f;
+        _lineIndicatorViewLandscapeHeight = 2.0f;
     }
     return self;
 }

@@ -88,6 +88,15 @@
                                       attribute:(NSLayoutAttributeTop)
                                      multiplier:1
                                        constant:0]];
+        CGFloat headBackgroundViewHeight;
+        if ([[UIApplication sharedApplication] statusBarOrientation] == UIInterfaceOrientationPortrait)
+        {
+            headBackgroundViewHeight = viewData.headBackgroundViewPortraitHeight;
+        }
+        else
+        {
+            headBackgroundViewHeight = viewData.headBackgroundViewLandscapeHeight;
+        }
         _headBackgroundViewHeightConstraint =
         [NSLayoutConstraint constraintWithItem:_headBackgroundView
                                      attribute:(NSLayoutAttributeHeight)
@@ -95,7 +104,7 @@
                                         toItem:self
                                      attribute:(NSLayoutAttributeHeight)
                                     multiplier:0
-                                      constant:viewData.headBackgroundViewHeight];
+                                      constant:headBackgroundViewHeight];
         [self addConstraint:_headBackgroundViewHeightConstraint];
         
         // lineIndicatorView
@@ -230,6 +239,23 @@
     [tabElement.switchButton setTitleColor:self.switchButtonSelectedColor forState:(UIControlStateSelected)];
     [tabElement.switchButton addTarget:self action:@selector(switchButtonSelected:) forControlEvents:(UIControlEventTouchUpInside)];
     
+    CGFloat headSwitchButtonHeight;
+    if ([[UIApplication sharedApplication] statusBarOrientation] == UIInterfaceOrientationPortrait)
+    {
+        headSwitchButtonHeight = self.viewData.headSwitchButtonPortraitHeight;
+    }
+    else
+    {
+        headSwitchButtonHeight = self.viewData.headSwitchButtonLandscapeHeight;
+    }
+    tabElement.switchButtonHeightConstraint =
+    [NSLayoutConstraint constraintWithItem:tabElement.switchButton
+                                 attribute:(NSLayoutAttributeHeight)
+                                 relatedBy:(NSLayoutRelationEqual)
+                                    toItem:self.headBackgroundView
+                                 attribute:(NSLayoutAttributeHeight)
+                                multiplier:0
+                                  constant:headSwitchButtonHeight];
     tabElement.switchButtonCenterXConstraint =
      [NSLayoutConstraint constraintWithItem:tabElement.switchButton
                                   attribute:(NSLayoutAttributeCenterX)
@@ -251,22 +277,9 @@
     [self.contentView addSubview:tabElement.contentView];
     
     // layout
-    [self layoutAfterAddTabElement:tabElement];
-}
-
-// private
-- (void)layoutAfterAddTabElement:(BDPhoneHeadTabElement *)tabElement
-{
     // setup the added tab element
     // switch button
-    [self addConstraint:
-     [NSLayoutConstraint constraintWithItem:tabElement.switchButton
-                                  attribute:(NSLayoutAttributeHeight)
-                                  relatedBy:(NSLayoutRelationEqual)
-                                     toItem:self
-                                  attribute:(NSLayoutAttributeHeight)
-                                 multiplier:0
-                                   constant:self.viewData.headTabButtonHeight]];
+    [self addConstraint:tabElement.switchButtonHeightConstraint];
     [self addConstraint:
      [NSLayoutConstraint constraintWithItem:tabElement.switchButton
                                   attribute:(NSLayoutAttributeBottom)
@@ -372,6 +385,28 @@
 {
     if ([notification.name isEqualToString:UIDeviceOrientationDidChangeNotification])
     {
+        // modify constraints
+        if ([[UIApplication sharedApplication] statusBarOrientation] == UIInterfaceOrientationPortrait)
+        {
+            self.headBackgroundViewHeightConstraint.constant = self.viewData.headBackgroundViewPortraitHeight;
+            
+            for (BDPhoneHeadTabElement *tabElement in self.tabElements)
+            {
+                tabElement.switchButtonHeightConstraint.constant = self.viewData.headSwitchButtonPortraitHeight;
+            }
+        }
+        else
+        {
+            self.headBackgroundViewHeightConstraint.constant = self.viewData.headBackgroundViewLandscapeHeight;
+            
+            for (BDPhoneHeadTabElement *tabElement in self.tabElements)
+            {
+                tabElement.switchButtonHeightConstraint.constant = self.viewData.headSwitchButtonLandscapeHeight;
+            }
+        }
+        [self setNeedsUpdateConstraints];
+        
+        // regulate views
         if (!self.contentScrollView.isDecelerating)
         {
             BDPhoneHeadTabElement *currentTabElement = [self.tabElements objectAtIndex:self.currentTabIndex];
