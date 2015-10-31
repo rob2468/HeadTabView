@@ -20,8 +20,8 @@
         _lineIndicatorViewPortraitWidth = 0.0f;
         _lineIndicatorViewPortraitHeight = 2.0f;
         
-        _headBackgroundViewLandscapeHeight = 44.0f;
-        _headSwitchButtonLandscapeHeight = 44.0f;
+        _headBackgroundViewLandscapeHeight = 32.0f;
+        _headSwitchButtonLandscapeHeight = 32.0f;
         _lineIndicatorViewLandscapeWidth = 0.0f;
         _lineIndicatorViewLandscapeHeight = 2.0f;
     }

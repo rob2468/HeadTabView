@@ -207,6 +207,15 @@
         {
             break;
         }
+        case BDPhoneHeadTabViewStyleLightGray:
+        {
+            headBackgroundColor = [UIColor colorWithRed:248/255.f green:248/255.f blue:248/255.f alpha:1];
+            
+            self.switchButtonNormalColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.5f];
+            self.switchButtonHighlightColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:1.0f];
+            self.switchButtonSelectedColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:1.0f];
+            break;
+        }
         default:
         {
             headBackgroundColor = [UIColor colorWithRed:248/255.f green:248/255.f blue:248/255.f alpha:1];
@@ -214,7 +223,6 @@
             self.switchButtonNormalColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.5f];
             self.switchButtonHighlightColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:1.0f];
             self.switchButtonSelectedColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:1.0f];
-            
             break;
         }
     }

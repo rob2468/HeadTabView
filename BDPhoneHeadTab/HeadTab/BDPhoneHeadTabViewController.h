@@ -17,8 +17,7 @@ typedef enum
     BDPhoneHeadTabViewStyleWhite,
     BDPhoneHeadTabViewStyleGray,
     BDPhoneHeadTabViewStyleRed,
-    BDPhoneHeadTabViewStyleLightGray,
-    BDPhoneHeadTabViewStyleAddWebAddress
+    BDPhoneHeadTabViewStyleLightGray
 } BDPhoneHeadTabViewStyle;
 
 @class BDPhoneHeadTabViewController;
