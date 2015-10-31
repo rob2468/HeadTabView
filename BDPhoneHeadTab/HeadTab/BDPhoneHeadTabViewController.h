@@ -47,9 +47,19 @@ typedef enum
 @property (readwrite, assign, nonatomic) BDPhoneHeadTabViewStyle tabViewStyle;
 
 /**
+ *  bounces enable, default is YES
+ */
+@property (readwrite, assign, nonatomic) BOOL bouncesEnable;
+
+/**
  *  switch by dragging enable, default is YES
  */
 @property (readwrite, assign, nonatomic) BOOL switchByDraggingEnable;
+
+/**
+ *  show line indicator, default is NO
+ */
+@property (readwrite, assign, nonatomic) BOOL showLineIndicator;
 
 /**
  *  delegate

@@ -100,6 +100,16 @@
     }
 }
 
+- (void)setBouncesEnable:(BOOL)bouncesEnable
+{
+    self.headTabView.contentScrollView.bounces = bouncesEnable;
+}
+
+- (BOOL)bouncesEnable
+{
+    return self.headTabView.contentScrollView.bounces;
+}
+
 - (void)setSwitchByDraggingEnable:(BOOL)switchByDraggingEnable
 {
     self.headTabView.contentScrollView.scrollEnabled = switchByDraggingEnable;
@@ -108,6 +118,16 @@
 - (BOOL)switchByDraggingEnable
 {
     return self.headTabView.contentScrollView.scrollEnabled;
+}
+
+- (void)setShowLineIndicator:(BOOL)showLineIndicator
+{
+    self.headTabView.lineIndicatorView.hidden = !showLineIndicator;
+}
+
+- (BOOL)showLineIndicator
+{
+    return !self.headTabView.lineIndicatorView.hidden;
 }
 
 #pragma mark - Add Tab

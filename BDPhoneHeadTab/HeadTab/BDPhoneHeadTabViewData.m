@@ -16,14 +16,12 @@
     if (self)
     {
         _headBackgroundViewPortraitHeight = 64.0f;
+        _headSwitchButtonPortraitWidth = 60.0f;
         _headSwitchButtonPortraitHeight = 44.0f;
-        _lineIndicatorViewPortraitWidth = 0.0f;
-        _lineIndicatorViewPortraitHeight = 2.0f;
         
         _headBackgroundViewLandscapeHeight = 32.0f;
+        _headSwitchButtonLandscapeWidth = 100.0f;
         _headSwitchButtonLandscapeHeight = 32.0f;
-        _lineIndicatorViewLandscapeWidth = 0.0f;
-        _lineIndicatorViewLandscapeHeight = 2.0f;
     }
     return self;
 }

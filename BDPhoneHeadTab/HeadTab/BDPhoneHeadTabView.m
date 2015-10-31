@@ -24,8 +24,7 @@
 
 @property (strong, nonatomic) NSLayoutConstraint *headBackgroundViewHeightConstraint;
 @property (strong, nonatomic) NSLayoutConstraint *lineIndicatorViewWidthConstraint;
-@property (strong, nonatomic) NSLayoutConstraint *lineIndicatorViewHeightConstraint;
-@property (strong, nonatomic) NSLayoutConstraint *lineIndicatorViewCenterXConstraint;
+@property (strong, nonatomic) NSLayoutConstraint *lineIndicatorViewLeadingConstraint;
 
 @property (strong, nonatomic) NSMutableArray *tabElements;      // tab elements
 
@@ -52,15 +51,14 @@
         _headBackgroundView.translatesAutoresizingMaskIntoConstraints = NO;
         [self addSubview:_headBackgroundView];
         
-        _lineIndicatorView = [[UIView alloc] init];
+        _lineIndicatorView = [[UIView alloc] init]; // will be added to view when the first tab added
         _lineIndicatorView.translatesAutoresizingMaskIntoConstraints = NO;
-        [_headBackgroundView addSubview:_lineIndicatorView];
         _lineIndicatorView.hidden = YES;
         
         _contentScrollView = [[UIScrollView alloc] init];
         _contentScrollView.translatesAutoresizingMaskIntoConstraints = NO;
         _contentScrollView.pagingEnabled = YES;
-        _contentScrollView.bounces = NO;
+        _contentScrollView.bounces = YES;
         _contentScrollView.scrollEnabled = YES;
         _contentScrollView.showsHorizontalScrollIndicator = NO;
         _contentScrollView.delegate = self;
@@ -72,7 +70,11 @@
         
         _tabElements = [[NSMutableArray alloc] init];
         
+        // add notification observer
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(notificationReceived:) name:UIDeviceOrientationDidChangeNotification object:nil];
+        
+        // KVO
+        [_contentScrollView addObserver:self forKeyPath:@"contentOffset" options:(NSKeyValueObservingOptionNew) context:nil];
         
         // add constraints
         NSDictionary *viewsDict = NSDictionaryOfVariableBindings(_headBackgroundView, _contentScrollView, _contentView);
@@ -109,43 +111,6 @@
                                     multiplier:0
                                       constant:headBackgroundViewHeight];
         [self addConstraint:_headBackgroundViewHeightConstraint];
-        
-        // lineIndicatorView
-        _lineIndicatorViewWidthConstraint =
-        [NSLayoutConstraint constraintWithItem:_lineIndicatorView
-                                     attribute:(NSLayoutAttributeWidth)
-                                     relatedBy:(NSLayoutRelationEqual)
-                                        toItem:self
-                                     attribute:(NSLayoutAttributeWidth)
-                                    multiplier:0
-                                      constant:0];
-        [self addConstraint:_lineIndicatorViewWidthConstraint];
-        _lineIndicatorViewHeightConstraint =
-        [NSLayoutConstraint constraintWithItem:_lineIndicatorView
-                                     attribute:(NSLayoutAttributeHeight)
-                                     relatedBy:(NSLayoutRelationEqual)
-                                        toItem:self
-                                     attribute:(NSLayoutAttributeHeight)
-                                    multiplier:0
-                                      constant:0];
-        [self addConstraint:_lineIndicatorViewHeightConstraint];
-        _lineIndicatorViewCenterXConstraint =
-        [NSLayoutConstraint constraintWithItem:_lineIndicatorView
-                                     attribute:(NSLayoutAttributeCenterX)
-                                     relatedBy:(NSLayoutRelationEqual)
-                                        toItem:self
-                                     attribute:(NSLayoutAttributeCenterX)
-                                    multiplier:1
-                                      constant:0];
-        [self addConstraint:_lineIndicatorViewCenterXConstraint];
-        [self addConstraint:
-         [NSLayoutConstraint constraintWithItem:_lineIndicatorView
-                                      attribute:(NSLayoutAttributeBottom)
-                                      relatedBy:(NSLayoutRelationEqual)
-                                         toItem:_headBackgroundView
-                                      attribute:(NSLayoutAttributeBottom)
-                                     multiplier:1
-                                       constant:0]];
         
         // contentScrollView
         [self addConstraints:
@@ -195,13 +160,16 @@
 - (void)dealloc
 {
     [[NSNotificationCenter defaultCenter] removeObserver:self];
+    
+    [_contentScrollView removeObserver:self forKeyPath:@"contentOffset"];
 }
 
-#pragma mark -
+#pragma mark - General Methods
 
 - (void)updateStyle:(BDPhoneHeadTabViewStyle)style
 {
     UIColor *headBackgroundColor;
+    UIColor *lineIndicatorViewBackgroundColor;
     
     // set variables
     switch (style)
@@ -213,6 +181,7 @@
         case BDPhoneHeadTabViewStyleLightGray:
         {
             headBackgroundColor = [UIColor colorWithRed:248/255.f green:248/255.f blue:248/255.f alpha:1];
+            lineIndicatorViewBackgroundColor = [UIColor blackColor];
             
             self.switchButtonNormalColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.5f];
             self.switchButtonHighlightColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:1.0f];
@@ -222,6 +191,7 @@
         default:
         {
             headBackgroundColor = [UIColor colorWithRed:248/255.f green:248/255.f blue:248/255.f alpha:1];
+            lineIndicatorViewBackgroundColor = [UIColor blackColor];
             
             self.switchButtonNormalColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:0.5f];
             self.switchButtonHighlightColor = [UIColor colorWithRed:0 green:0 blue:0 alpha:1.0f];
@@ -232,6 +202,7 @@
     
     // set views
     self.headBackgroundView.backgroundColor = headBackgroundColor;
+    self.lineIndicatorView.backgroundColor = lineIndicatorViewBackgroundColor;
     
     for (BDPhoneHeadTabElement *tabElement in self.tabElements)
     {
@@ -257,18 +228,71 @@
     [self.contentView addSubview:tabElement.contentView];
     
     // layout after adding a tab element
+    // line indicator
+    if ([self.tabElements count] == 1)
+    {
+        [self.headBackgroundView addSubview:self.lineIndicatorView];
+        
+        self.lineIndicatorViewWidthConstraint =
+        [NSLayoutConstraint constraintWithItem:self.lineIndicatorView
+                                     attribute:(NSLayoutAttributeWidth)
+                                     relatedBy:(NSLayoutRelationEqual)
+                                        toItem:tabElement.switchButton
+                                     attribute:(NSLayoutAttributeWidth)
+                                    multiplier:1
+                                      constant:0];
+        [self addConstraint:self.lineIndicatorViewWidthConstraint];
+        [self addConstraint:
+         [NSLayoutConstraint constraintWithItem:self.lineIndicatorView
+                                      attribute:(NSLayoutAttributeHeight)
+                                      relatedBy:(NSLayoutRelationEqual)
+                                         toItem:self.headBackgroundView
+                                      attribute:(NSLayoutAttributeHeight)
+                                     multiplier:0
+                                       constant:2.0f]];
+        self.lineIndicatorViewLeadingConstraint =
+        [NSLayoutConstraint constraintWithItem:self.lineIndicatorView
+                                     attribute:(NSLayoutAttributeLeading)
+                                     relatedBy:(NSLayoutRelationEqual)
+                                        toItem:tabElement.switchButton
+                                     attribute:(NSLayoutAttributeLeading)
+                                    multiplier:1
+                                      constant:0];
+        [self addConstraint:self.lineIndicatorViewLeadingConstraint];
+        [self addConstraint:
+         [NSLayoutConstraint constraintWithItem:_lineIndicatorView
+                                      attribute:(NSLayoutAttributeBottom)
+                                      relatedBy:(NSLayoutRelationEqual)
+                                         toItem:_headBackgroundView
+                                      attribute:(NSLayoutAttributeBottom)
+                                     multiplier:1
+                                       constant:0]];
+    }
+    
     // switch button
+    CGFloat headSwitchButtonWidth;
     CGFloat headSwitchButtonHeight;
     if ([[UIApplication sharedApplication] statusBarOrientation] == UIInterfaceOrientationPortrait)
     {
+        headSwitchButtonWidth = self.viewData.headSwitchButtonPortraitWidth;
         headSwitchButtonHeight = self.viewData.headSwitchButtonPortraitHeight;
     }
     else
     {
+        headSwitchButtonWidth = self.viewData.headSwitchButtonLandscapeWidth;
         headSwitchButtonHeight = self.viewData.headSwitchButtonLandscapeHeight;
     }
+    tabElement.switchButtonWidthConstraint =
+    [NSLayoutConstraint constraintWithItem:tabElement.switchButton
+                                 attribute:(NSLayoutAttributeWidth)
+                                 relatedBy:(NSLayoutRelationEqual)
+                                    toItem:self.headBackgroundView
+                                 attribute:(NSLayoutAttributeWidth)
+                                multiplier:0
+                                  constant:headSwitchButtonWidth];
+    [self addConstraint:tabElement.switchButtonWidthConstraint];
     tabElement.switchButtonHeightConstraint =
-     [NSLayoutConstraint constraintWithItem:tabElement.switchButton
+    [NSLayoutConstraint constraintWithItem:tabElement.switchButton
                                  attribute:(NSLayoutAttributeHeight)
                                  relatedBy:(NSLayoutRelationEqual)
                                     toItem:self.headBackgroundView
@@ -285,7 +309,7 @@
                                  multiplier:1
                                    constant:0]];
     tabElement.switchButtonCenterXConstraint =
-     [NSLayoutConstraint constraintWithItem:tabElement.switchButton
+    [NSLayoutConstraint constraintWithItem:tabElement.switchButton
                                  attribute:(NSLayoutAttributeCenterX)
                                  relatedBy:(NSLayoutRelationEqual)
                                     toItem:self.headBackgroundView
@@ -358,29 +382,13 @@
     }
     
     // update all tab elements constraints
-    CGFloat unitWidth = 0;
-    for (BDPhoneHeadTabElement *tempTabElement in self.tabElements)
-    {
-        UIButton *tempSwitchButton = tempTabElement.switchButton;
-        [tempSwitchButton sizeToFit];
-        CGFloat tempUnitWidth = tempSwitchButton.bounds.size.width / 2.0;
-        if (tempUnitWidth > unitWidth)
-        {
-            unitWidth = tempUnitWidth;
-        }
-    }
-    CGFloat centerXPos = - unitWidth * ([self.tabElements count] -1);
-    for (NSInteger i=0; i<[self.tabElements count]; i++)
-    {
-        BDPhoneHeadTabElement *tempTabElement = [self.tabElements objectAtIndex:i];
-        tempTabElement.switchButtonCenterXConstraint.constant = centerXPos;
-        centerXPos += unitWidth * 2;
-    }
+    [self regulateSwitchButtonsConstraints];
     
     [self setNeedsUpdateConstraints];
     [self layoutIfNeeded];
     
     // updata status
+    // switch button
     if (([self.tabElements count]-1) == self.currentTabIndex)
     {
         tabElement.switchButton.selected = YES;
@@ -390,6 +398,19 @@
     {
         BDPhoneHeadTabElement *currentTabElement = [self.tabElements objectAtIndex:self.currentTabIndex];
         
+        // line indicator
+        if ([self.tabElements count] > 1 && self.currentTabIndex > 0)
+        {
+            BDPhoneHeadTabElement *firstTabElement = [self.tabElements objectAtIndex:0];
+            BDPhoneHeadTabElement *secondTabElement = [self.tabElements objectAtIndex:1];
+            CGFloat gapWidth = secondTabElement.switchButton.frame.origin.x - firstTabElement.switchButton.frame.origin.x;
+            
+            self.lineIndicatorViewLeadingConstraint.constant = gapWidth * self.currentTabIndex;
+            
+            [self setNeedsUpdateConstraints];
+        }
+        
+        // content view
         CGPoint contentOffset = currentTabElement.contentView.frame.origin;
         [self.contentScrollView setContentOffset:contentOffset animated:NO];
     }
@@ -400,6 +421,38 @@
     
 }
 
+#pragma mark - Helper Methods
+
+- (void)regulateSwitchButtonsConstraints
+{
+    CGFloat headSwitchButtonWidth;
+    CGFloat headSwitchButtonHeight;
+    if ([[UIApplication sharedApplication] statusBarOrientation] == UIInterfaceOrientationPortrait)
+    {
+        headSwitchButtonWidth = self.viewData.headSwitchButtonPortraitWidth;
+        headSwitchButtonHeight = self.viewData.headSwitchButtonPortraitHeight;
+    }
+    else
+    {
+        headSwitchButtonWidth = self.viewData.headSwitchButtonLandscapeWidth;
+        headSwitchButtonHeight = self.viewData.headSwitchButtonLandscapeHeight;
+    }
+    
+    CGFloat unitWidth = headSwitchButtonWidth / 2.0f;
+    CGFloat centerXPos = - unitWidth * ([self.tabElements count] -1);
+    for (NSInteger i=0; i<[self.tabElements count]; i++)
+    {
+        BDPhoneHeadTabElement *tempTabElement = [self.tabElements objectAtIndex:i];
+        tempTabElement.switchButtonCenterXConstraint.constant = centerXPos;
+        centerXPos += unitWidth * 2;
+        
+        tempTabElement.switchButtonWidthConstraint.constant = headSwitchButtonWidth;
+        tempTabElement.switchButtonHeightConstraint.constant = headSwitchButtonHeight;
+    }
+}
+
+#pragma mark - Notification
+
 - (void)notificationReceived:(NSNotification *)notification
 {
     if ([notification.name isEqualToString:UIDeviceOrientationDidChangeNotification])
@@ -408,22 +461,15 @@
         if ([[UIApplication sharedApplication] statusBarOrientation] == UIInterfaceOrientationPortrait)
         {
             self.headBackgroundViewHeightConstraint.constant = self.viewData.headBackgroundViewPortraitHeight;
-            
-            for (BDPhoneHeadTabElement *tabElement in self.tabElements)
-            {
-                tabElement.switchButtonHeightConstraint.constant = self.viewData.headSwitchButtonPortraitHeight;
-            }
         }
         else
         {
             self.headBackgroundViewHeightConstraint.constant = self.viewData.headBackgroundViewLandscapeHeight;
-            
-            for (BDPhoneHeadTabElement *tabElement in self.tabElements)
-            {
-                tabElement.switchButtonHeightConstraint.constant = self.viewData.headSwitchButtonLandscapeHeight;
-            }
         }
+        [self regulateSwitchButtonsConstraints];
+        
         [self setNeedsUpdateConstraints];
+        [self layoutIfNeeded];
         
         // regulate views
         if (!self.contentScrollView.isDecelerating)
@@ -436,6 +482,28 @@
     }
 }
 
+#pragma mark - KVO
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSString *,id> *)change context:(void *)context
+{
+    if ([keyPath isEqualToString:@"contentOffset"])
+    {
+        if (self.tabElements != nil && [self.tabElements count] > 1)
+        {
+            CGFloat viewTotalWidth = self.contentScrollView.bounds.size.width * ([self.tabElements count] -1);
+            CGFloat offsetRatio = self.contentScrollView.contentOffset.x / viewTotalWidth;
+            
+            BDPhoneHeadTabElement *firstTabElement = [self.tabElements objectAtIndex:0];
+            BDPhoneHeadTabElement *secondTabElement = [self.tabElements objectAtIndex:1];
+            CGFloat gapWidth = secondTabElement.switchButton.frame.origin.x - firstTabElement.switchButton.frame.origin.x;
+            CGFloat switchButtonTotalWidth = gapWidth * ([self.tabElements count] -1);
+            
+            self.lineIndicatorViewLeadingConstraint.constant = switchButtonTotalWidth * offsetRatio;
+            
+            [self setNeedsUpdateConstraints];
+        }
+    }
+}
 
 #pragma mark - UIScrollViewDelegate
 
@@ -564,6 +632,7 @@
     if (self)
     {
         _switchButton = [UIButton buttonWithType:(UIButtonTypeCustom)];
+        [_switchButton setBackgroundColor:[UIColor clearColor]];
         _switchButton.translatesAutoresizingMaskIntoConstraints = NO;
         [_switchButton setTitle:title forState:(UIControlStateNormal)];
         

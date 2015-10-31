@@ -81,6 +81,7 @@
 @property (strong, nonatomic) UIButton *switchButton;
 @property (strong, nonatomic) UIView *contentView;
 
+@property (strong, nonatomic) NSLayoutConstraint *switchButtonWidthConstraint;
 @property (strong, nonatomic) NSLayoutConstraint *switchButtonHeightConstraint;
 @property (strong, nonatomic) NSLayoutConstraint *switchButtonCenterXConstraint;
 @property (strong, nonatomic) NSLayoutConstraint *contentViewTrailingConstraint;
