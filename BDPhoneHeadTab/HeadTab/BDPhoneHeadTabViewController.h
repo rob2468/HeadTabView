@@ -36,7 +36,15 @@ typedef enum
 
 @interface BDPhoneHeadTabViewController : UIViewController
 
+/**
+ *  style of tab view
+ */
 @property (assign, nonatomic) BDPhoneHeadTabViewStyle style;
+
+/**
+ *  switch by dragging enable, default is YES
+ */
+@property (assign, nonatomic) BOOL switchByDraggingEnable;
 
 /**
  *  current tab index

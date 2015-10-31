@@ -58,6 +58,7 @@
         _contentScrollView.translatesAutoresizingMaskIntoConstraints = NO;
         _contentScrollView.pagingEnabled = YES;
         _contentScrollView.bounces = NO;
+        _contentScrollView.scrollEnabled = YES;
         _contentScrollView.showsHorizontalScrollIndicator = NO;
         _contentScrollView.delegate = self;
         [self addSubview:_contentScrollView];

@@ -86,7 +86,7 @@
     }
 }
 
-#pragma mark -
+#pragma mark - General Methods
 
 - (void)updateStyle:(BDPhoneHeadTabViewStyle)style
 {
@@ -102,6 +102,11 @@
 - (NSInteger)currentTabIndex
 {
     return self.headTabView.currentTabIndex;
+}
+
+- (void)setSwitchByDraggingEnable:(BOOL)switchByDraggingEnable
+{
+    self.headTabView.contentScrollView.scrollEnabled = switchByDraggingEnable;
 }
 
 #pragma mark - Add Tab
