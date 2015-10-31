@@ -37,19 +37,19 @@ typedef enum
 @interface BDPhoneHeadTabViewController : UIViewController
 
 /**
+ *  current tab index
+ */
+@property (readonly, assign, nonatomic) NSInteger currentTabIndex;
+
+/**
  *  style of tab view
  */
-@property (assign, nonatomic) BDPhoneHeadTabViewStyle style;
+@property (readwrite, assign, nonatomic) BDPhoneHeadTabViewStyle tabViewStyle;
 
 /**
  *  switch by dragging enable, default is YES
  */
-@property (assign, nonatomic) BOOL switchByDraggingEnable;
-
-/**
- *  current tab index
- */
-@property (assign, nonatomic) NSInteger currentTabIndex;
+@property (readwrite, assign, nonatomic) BOOL switchByDraggingEnable;
 
 /**
  *  delegate
@@ -57,8 +57,6 @@ typedef enum
 @property (weak, nonatomic) id<BDPhoneHeadTabViewControllerDelegate> delegate;
 
 - (instancetype)initWithTabIndex:(NSInteger)tabIndex;
-
-- (void)updateStyle:(BDPhoneHeadTabViewStyle)style;
 
 /**
  *  add tab

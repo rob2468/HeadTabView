@@ -45,7 +45,7 @@
 /**
  *  current tab index
  */
-@property (assign, nonatomic) NSInteger currentTabIndex;
+@property (readonly, assign, nonatomic) NSInteger currentTabIndex;
 
 /**
  *  @brief initialize with BDPhoneHeadTabViewData

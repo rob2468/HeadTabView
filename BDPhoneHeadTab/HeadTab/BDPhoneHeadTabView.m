@@ -13,6 +13,9 @@
 
 @interface BDPhoneHeadTabView () <UIScrollViewDelegate>
 
+// redeclaration
+@property (readwrite, assign, nonatomic) NSInteger currentTabIndex;
+
 @property (strong, nonatomic) BDPhoneHeadTabViewData *viewData; // view data
 
 @property (strong, nonatomic) UIColor *switchButtonNormalColor;

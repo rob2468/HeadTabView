@@ -30,8 +30,8 @@
     
     self.headTabViewController = [[BDPhoneHeadTabViewController alloc] initWithTabIndex:1];
     self.headTabViewController.delegate = self;
-    self.headTabViewController.switchByDraggingEnable = NO;
-    [self.headTabViewController updateStyle:(BDPhoneHeadTabViewStyleLightGray)];
+    self.headTabViewController.switchByDraggingEnable = YES;
+    self.headTabViewController.tabViewStyle = BDPhoneHeadTabViewStyleLightGray;
     [self.view addSubview:self.headTabViewController.view];
     
     // layout

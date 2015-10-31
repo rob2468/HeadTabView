@@ -24,8 +24,6 @@
     self = [super init];
     if (self)
     {
-        _currentTabIndex = tabIndex;
-        
         _headTabViewData = [[BDPhoneHeadTabViewData alloc] init];
         _headTabView = [[BDPhoneHeadTabView alloc] initWithTabIndex:tabIndex viewData:_headTabViewData];
         _headTabView.delegate = self;
@@ -86,17 +84,6 @@
     }
 }
 
-#pragma mark - General Methods
-
-- (void)updateStyle:(BDPhoneHeadTabViewStyle)style
-{
-    if (self.style != style)
-    {
-        self.style = style;
-        [self.headTabView updateStyle:self.style];
-    }
-}
-
 #pragma Setter and Getter
 
 - (NSInteger)currentTabIndex
@@ -104,9 +91,23 @@
     return self.headTabView.currentTabIndex;
 }
 
+- (void)setTabViewStyle:(BDPhoneHeadTabViewStyle)tabViewStyle
+{
+    if (_tabViewStyle != tabViewStyle)
+    {
+        _tabViewStyle = tabViewStyle;
+        [self.headTabView updateStyle:tabViewStyle];
+    }
+}
+
 - (void)setSwitchByDraggingEnable:(BOOL)switchByDraggingEnable
 {
     self.headTabView.contentScrollView.scrollEnabled = switchByDraggingEnable;
+}
+
+- (BOOL)switchByDraggingEnable
+{
+    return self.headTabView.contentScrollView.scrollEnabled;
 }
 
 #pragma mark - Add Tab
