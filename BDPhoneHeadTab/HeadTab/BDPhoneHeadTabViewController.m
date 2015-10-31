@@ -19,15 +19,15 @@
 
 @implementation BDPhoneHeadTabViewController
 
-- (instancetype)init
+- (instancetype)initWithTabIndex:(NSInteger)tabIndex
 {
     self = [super init];
     if (self)
     {
-        _currentTabIndex = 0;
+        _currentTabIndex = tabIndex;
         
         _headTabViewData = [[BDPhoneHeadTabViewData alloc] init];
-        _headTabView = [[BDPhoneHeadTabView alloc] initWithViewData:_headTabViewData];
+        _headTabView = [[BDPhoneHeadTabView alloc] initWithTabIndex:tabIndex viewData:_headTabViewData];
         _headTabView.delegate = self;
     }
     return self;

@@ -30,11 +30,13 @@
 
 @implementation BDPhoneHeadTabView
 
-- (instancetype)initWithViewData:(BDPhoneHeadTabViewData *)viewData
+- (instancetype)initWithTabIndex:(NSInteger)tabIndex viewData:(BDPhoneHeadTabViewData *)viewData;
 {
     self = [super init];
     if (self)
     {
+        _currentTabIndex = tabIndex;
+        
         // view data
         _viewData = viewData;
         
@@ -65,9 +67,6 @@
         [_contentScrollView addSubview:_contentView];
         
         _tabElements = [[NSMutableArray alloc] init];
-        
-        // the defaut tab is the first
-        _currentTabIndex = 0;
         
         [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(notificationReceived:) name:UIDeviceOrientationDidChangeNotification object:nil];
         
@@ -247,6 +246,14 @@
     [tabElement.switchButton setTitleColor:self.switchButtonSelectedColor forState:(UIControlStateSelected)];
     [tabElement.switchButton addTarget:self action:@selector(switchButtonSelected:) forControlEvents:(UIControlEventTouchUpInside)];
     
+    [self.tabElements addObject:tabElement];
+    
+    // add to view hierachy
+    [self.headBackgroundView addSubview:tabElement.switchButton];
+    [self.contentView addSubview:tabElement.contentView];
+    
+    // layout after adding a tab element
+    // switch button
     CGFloat headSwitchButtonHeight;
     if ([[UIApplication sharedApplication] statusBarOrientation] == UIInterfaceOrientationPortrait)
     {
@@ -257,36 +264,13 @@
         headSwitchButtonHeight = self.viewData.headSwitchButtonLandscapeHeight;
     }
     tabElement.switchButtonHeightConstraint =
-    [NSLayoutConstraint constraintWithItem:tabElement.switchButton
+     [NSLayoutConstraint constraintWithItem:tabElement.switchButton
                                  attribute:(NSLayoutAttributeHeight)
                                  relatedBy:(NSLayoutRelationEqual)
                                     toItem:self.headBackgroundView
                                  attribute:(NSLayoutAttributeHeight)
                                 multiplier:0
                                   constant:headSwitchButtonHeight];
-    tabElement.switchButtonCenterXConstraint =
-     [NSLayoutConstraint constraintWithItem:tabElement.switchButton
-                                  attribute:(NSLayoutAttributeCenterX)
-                                  relatedBy:(NSLayoutRelationEqual)
-                                     toItem:self.headBackgroundView
-                                  attribute:(NSLayoutAttributeCenterX)
-                                 multiplier:1
-                                   constant:0];
-    [self.tabElements addObject:tabElement];
-    
-    // update switch button status
-    if (([self.tabElements count]-1) == self.currentTabIndex)
-    {
-        tabElement.switchButton.selected = YES;
-    }
-    
-    // add to view hierachy
-    [self.headBackgroundView addSubview:tabElement.switchButton];
-    [self.contentView addSubview:tabElement.contentView];
-    
-    // layout
-    // setup the added tab element
-    // switch button
     [self addConstraint:tabElement.switchButtonHeightConstraint];
     [self addConstraint:
      [NSLayoutConstraint constraintWithItem:tabElement.switchButton
@@ -296,6 +280,14 @@
                                   attribute:(NSLayoutAttributeBottom)
                                  multiplier:1
                                    constant:0]];
+    tabElement.switchButtonCenterXConstraint =
+     [NSLayoutConstraint constraintWithItem:tabElement.switchButton
+                                 attribute:(NSLayoutAttributeCenterX)
+                                 relatedBy:(NSLayoutRelationEqual)
+                                    toItem:self.headBackgroundView
+                                 attribute:(NSLayoutAttributeCenterX)
+                                multiplier:1
+                                  constant:0];
     [self addConstraint:tabElement.switchButtonCenterXConstraint];
     
     // content view
@@ -347,7 +339,7 @@
     }
     else
     {
-        // tab element before last
+        // tab leading element
         BDPhoneHeadTabElement *leadingTabElement = [self.tabElements objectAtIndex:[self.tabElements count]-2];
         [self removeConstraint:leadingTabElement.contentViewTrailingConstraint];
         
@@ -361,7 +353,7 @@
                                        constant:0]];
     }
     
-    // update all tab elements
+    // update all tab elements constraints
     CGFloat unitWidth = 0;
     for (BDPhoneHeadTabElement *tempTabElement in self.tabElements)
     {
@@ -382,6 +374,21 @@
     }
     
     [self setNeedsUpdateConstraints];
+    [self layoutIfNeeded];
+    
+    // updata status
+    if (([self.tabElements count]-1) == self.currentTabIndex)
+    {
+        tabElement.switchButton.selected = YES;
+    }
+    
+    if (self.currentTabIndex < [self.tabElements count])
+    {
+        BDPhoneHeadTabElement *currentTabElement = [self.tabElements objectAtIndex:self.currentTabIndex];
+        
+        CGPoint contentOffset = currentTabElement.contentView.frame.origin;
+        [self.contentScrollView setContentOffset:contentOffset animated:NO];
+    }
 }
 
 - (void)selectTabAtIndex:(NSInteger)tabIndex

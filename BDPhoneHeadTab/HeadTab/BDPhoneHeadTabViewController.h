@@ -48,6 +48,8 @@ typedef enum
  */
 @property (weak, nonatomic) id<BDPhoneHeadTabViewControllerDelegate> delegate;
 
+- (instancetype)initWithTabIndex:(NSInteger)tabIndex;
+
 - (void)updateStyle:(BDPhoneHeadTabViewStyle)style;
 
 /**

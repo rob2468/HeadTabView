@@ -50,7 +50,7 @@
 /**
  *  @brief initialize with BDPhoneHeadTabViewData
  */
-- (instancetype)initWithViewData:(BDPhoneHeadTabViewData *)viewData;
+- (instancetype)initWithTabIndex:(NSInteger)tabIndex viewData:(BDPhoneHeadTabViewData *)viewData;
 
 /**
  *  @brief set or modify style

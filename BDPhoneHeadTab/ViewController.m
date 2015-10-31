@@ -28,7 +28,7 @@
 {
     [super viewDidLoad];
     
-    self.headTabViewController = [[BDPhoneHeadTabViewController alloc] init];
+    self.headTabViewController = [[BDPhoneHeadTabViewController alloc] initWithTabIndex:1];
     self.headTabViewController.delegate = self;
     [self.headTabViewController updateStyle:(BDPhoneHeadTabViewStyleLightGray)];
     [self.view addSubview:self.headTabViewController.view];
