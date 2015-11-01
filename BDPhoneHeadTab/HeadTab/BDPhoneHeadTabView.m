@@ -70,9 +70,6 @@
         
         _tabElements = [[NSMutableArray alloc] init];
         
-        // add notification observer
-        [[NSNotificationCenter defaultCenter] addObserver:self selector:@selector(notificationReceived:) name:UIDeviceOrientationDidChangeNotification object:nil];
-        
         // KVO
         [_contentScrollView addObserver:self forKeyPath:@"contentOffset" options:(NSKeyValueObservingOptionNew) context:nil];
         
@@ -162,6 +159,67 @@
     [[NSNotificationCenter defaultCenter] removeObserver:self];
     
     [_contentScrollView removeObserver:self forKeyPath:@"contentOffset"];
+}
+
+- (void)layoutSubviews
+{
+    // modify constraints
+    if ([[UIApplication sharedApplication] statusBarOrientation] == UIInterfaceOrientationPortrait)
+    {
+        self.headBackgroundViewHeightConstraint.constant = self.viewData.headBackgroundViewPortraitHeight;
+    }
+    else
+    {
+        self.headBackgroundViewHeightConstraint.constant = self.viewData.headBackgroundViewLandscapeHeight;
+    }
+    if (self.tabElements != nil && [self.tabElements count] > 0)
+    {
+        [self regulateSwitchButtonsConstraints];
+    }
+    
+    [self setNeedsUpdateConstraints];
+    [self layoutIfNeeded];
+    
+    // regulate views
+    if (!self.contentScrollView.isDecelerating)
+    {
+        if (self.tabElements != nil && [self.tabElements count] > 0 && self.currentTabIndex < [self.tabElements count])
+        {
+            BDPhoneHeadTabElement *currentTabElement = [self.tabElements objectAtIndex:self.currentTabIndex];
+            
+            CGPoint contentOffset = currentTabElement.contentView.frame.origin;
+            [self.contentScrollView setContentOffset:contentOffset animated:NO];
+        }
+    }
+}
+
+#pragma mark - KVO
+
+- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSString *,id> *)change context:(void *)context
+{
+    if ([keyPath isEqualToString:@"contentOffset"])
+    {
+        if (self.tabElements != nil && [self.tabElements count] > 1)
+        {
+            CGFloat viewTotalWidth = self.contentScrollView.bounds.size.width * ([self.tabElements count] -1);
+            CGFloat offsetRatio = self.contentScrollView.contentOffset.x / viewTotalWidth;
+            
+            CGFloat gapWidth;
+            if ([[UIApplication sharedApplication] statusBarOrientation] == UIInterfaceOrientationPortrait)
+            {
+                gapWidth = self.viewData.headSwitchButtonPortraitWidth;
+            }
+            else
+            {
+                gapWidth = self.viewData.headSwitchButtonLandscapeWidth;
+            }
+            CGFloat switchButtonTotalWidth = gapWidth * ([self.tabElements count] -1);
+            
+            self.lineIndicatorViewLeadingConstraint.constant = switchButtonTotalWidth * offsetRatio;
+            
+            [self setNeedsUpdateConstraints];
+        }
+    }
 }
 
 #pragma mark - General Methods
@@ -448,60 +506,6 @@
         
         tempTabElement.switchButtonWidthConstraint.constant = headSwitchButtonWidth;
         tempTabElement.switchButtonHeightConstraint.constant = headSwitchButtonHeight;
-    }
-}
-
-#pragma mark - Notification
-
-- (void)notificationReceived:(NSNotification *)notification
-{
-    if ([notification.name isEqualToString:UIDeviceOrientationDidChangeNotification])
-    {
-        // modify constraints
-        if ([[UIApplication sharedApplication] statusBarOrientation] == UIInterfaceOrientationPortrait)
-        {
-            self.headBackgroundViewHeightConstraint.constant = self.viewData.headBackgroundViewPortraitHeight;
-        }
-        else
-        {
-            self.headBackgroundViewHeightConstraint.constant = self.viewData.headBackgroundViewLandscapeHeight;
-        }
-        [self regulateSwitchButtonsConstraints];
-        
-        [self setNeedsUpdateConstraints];
-        [self layoutIfNeeded];
-        
-        // regulate views
-        if (!self.contentScrollView.isDecelerating)
-        {
-            BDPhoneHeadTabElement *currentTabElement = [self.tabElements objectAtIndex:self.currentTabIndex];
-            
-            CGPoint contentOffset = currentTabElement.contentView.frame.origin;
-            [self.contentScrollView setContentOffset:contentOffset animated:NO];
-        }
-    }
-}
-
-#pragma mark - KVO
-
-- (void)observeValueForKeyPath:(NSString *)keyPath ofObject:(id)object change:(NSDictionary<NSString *,id> *)change context:(void *)context
-{
-    if ([keyPath isEqualToString:@"contentOffset"])
-    {
-        if (self.tabElements != nil && [self.tabElements count] > 1)
-        {
-            CGFloat viewTotalWidth = self.contentScrollView.bounds.size.width * ([self.tabElements count] -1);
-            CGFloat offsetRatio = self.contentScrollView.contentOffset.x / viewTotalWidth;
-            
-            BDPhoneHeadTabElement *firstTabElement = [self.tabElements objectAtIndex:0];
-            BDPhoneHeadTabElement *secondTabElement = [self.tabElements objectAtIndex:1];
-            CGFloat gapWidth = secondTabElement.switchButton.frame.origin.x - firstTabElement.switchButton.frame.origin.x;
-            CGFloat switchButtonTotalWidth = gapWidth * ([self.tabElements count] -1);
-            
-            self.lineIndicatorViewLeadingConstraint.constant = switchButtonTotalWidth * offsetRatio;
-            
-            [self setNeedsUpdateConstraints];
-        }
     }
 }
 
