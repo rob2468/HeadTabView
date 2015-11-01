@@ -38,6 +38,7 @@
     if (self)
     {
         _currentTabIndex = tabIndex;
+        _switchAnimationEnable = YES;
         
         // view data
         _viewData = viewData;
@@ -615,7 +616,7 @@
     
     // content view status
     CGPoint contentOffset = newTabElement.contentView.frame.origin;
-    [self.contentScrollView setContentOffset:contentOffset animated:YES];
+    [self.contentScrollView setContentOffset:contentOffset animated:self.switchAnimationEnable];
     
     // send tab changed event
     if ([self.delegate respondsToSelector:@selector(onTabChanged:fromTabIndex:)])

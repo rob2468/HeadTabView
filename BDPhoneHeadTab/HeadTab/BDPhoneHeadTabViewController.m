@@ -120,6 +120,16 @@
     return self.headTabView.contentScrollView.scrollEnabled;
 }
 
+- (void)setSwitchAnimationEnable:(BOOL)switchAnimationEnable
+{
+    self.headTabView.switchAnimationEnable = switchAnimationEnable;
+}
+
+- (BOOL)switchAnimationEnable
+{
+    return self.headTabView.switchAnimationEnable;
+}
+
 - (void)setShowLineIndicator:(BOOL)showLineIndicator
 {
     self.headTabView.lineIndicatorView.hidden = !showLineIndicator;

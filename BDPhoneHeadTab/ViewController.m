@@ -32,6 +32,7 @@
     self.headTabViewController.delegate = self;
     self.headTabViewController.bouncesEnable = YES;
     self.headTabViewController.switchByDraggingEnable = YES;
+    self.headTabViewController.switchAnimationEnable = NO;
     self.headTabViewController.tabViewStyle = BDPhoneHeadTabViewStyleLightGray;
     self.headTabViewController.showLineIndicator = YES;
     [self.view addSubview:self.headTabViewController.view];

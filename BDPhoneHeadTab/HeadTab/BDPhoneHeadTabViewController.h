@@ -57,6 +57,11 @@ typedef enum
 @property (readwrite, assign, nonatomic) BOOL switchByDraggingEnable;
 
 /**
+ *  switch animation enable, default is YES
+ */
+@property (readwrite, assign, nonatomic) BOOL switchAnimationEnable;
+
+/**
  *  show line indicator, default is NO
  */
 @property (readwrite, assign, nonatomic) BOOL showLineIndicator;

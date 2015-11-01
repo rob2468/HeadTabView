@@ -43,9 +43,14 @@
 @property (weak, nonatomic) id<BDPhoneHeadTabViewDelegate> delegate;
 
 /**
- *  current tab index
+ *  @brief current tab index
  */
 @property (readonly, assign, nonatomic) NSInteger currentTabIndex;
+
+/**
+ *  @brief switch animation enable, default is YES
+ */
+@property (readwrite, assign, nonatomic) BOOL switchAnimationEnable;
 
 /**
  *  @brief initialize with BDPhoneHeadTabViewData
