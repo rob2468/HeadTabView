@@ -327,6 +327,7 @@
                                      multiplier:1
                                        constant:0]];
     }
+    [self.headBackgroundView bringSubviewToFront:self.lineIndicatorView];
     
     // switch button
     CGFloat headSwitchButtonWidth;
