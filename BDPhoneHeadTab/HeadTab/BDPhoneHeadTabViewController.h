@@ -10,6 +10,7 @@
  */
 
 #import <UIKit/UIKit.h>
+#import "BDPhoneHeadTabViewData.h"
 
 typedef enum
 {
@@ -71,7 +72,7 @@ typedef enum
  */
 @property (weak, nonatomic) id<BDPhoneHeadTabViewControllerDelegate> delegate;
 
-- (instancetype)initWithTabIndex:(NSInteger)tabIndex;
+- (instancetype)initWithTabIndex:(NSInteger)tabIndex viewData:(BDPhoneHeadTabViewData *)headTabViewData;
 
 /**
  *  add tab

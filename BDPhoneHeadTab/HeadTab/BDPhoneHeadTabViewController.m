@@ -8,24 +8,25 @@
 
 #import "BDPhoneHeadTabViewController.h"
 #import "BDPhoneHeadTabView.h"
-#import "BDPhoneHeadTabViewData.h"
 
 @interface BDPhoneHeadTabViewController () <BDPhoneHeadTabViewDelegate>
 
-@property (strong, nonatomic) BDPhoneHeadTabViewData *headTabViewData;
 @property (strong, nonatomic) BDPhoneHeadTabView *headTabView;
 
 @end
 
 @implementation BDPhoneHeadTabViewController
 
-- (instancetype)initWithTabIndex:(NSInteger)tabIndex
+- (instancetype)initWithTabIndex:(NSInteger)tabIndex viewData:(BDPhoneHeadTabViewData *)headTabViewData
 {
     self = [super init];
     if (self)
     {
-        _headTabViewData = [[BDPhoneHeadTabViewData alloc] init];
-        _headTabView = [[BDPhoneHeadTabView alloc] initWithTabIndex:tabIndex viewData:_headTabViewData];
+        if (headTabViewData == nil)
+        {
+            headTabViewData = [[BDPhoneHeadTabViewData alloc] init];
+        }
+        _headTabView = [[BDPhoneHeadTabView alloc] initWithTabIndex:tabIndex viewData:headTabViewData];
         _headTabView.delegate = self;
     }
     return self;
