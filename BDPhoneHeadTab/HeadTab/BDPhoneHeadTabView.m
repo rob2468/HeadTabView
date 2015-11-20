@@ -192,6 +192,8 @@
             [self.contentScrollView setContentOffset:contentOffset animated:NO];
         }
     }
+    
+    [super layoutSubviews];
 }
 
 #pragma mark - KVO
